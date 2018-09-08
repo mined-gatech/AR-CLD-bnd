@@ -7,7 +7,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
 %
 % INPUT:
 % - gbs is a 4xN array of boundary segments: [x1,y1,x2,y2]
-% - spacing is the spacing between probing lines
+% - spacing is the spacing between test lines
 % - ang_range is a list of CLD sampling directions (in deg.)
 % OUTPUT:
 % - structure array with calculated statistics
@@ -32,7 +32,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
             end
             if strcmp(varargin{ii},'silent') == 1
                 silent = 1;
-                disp('Output is supressed')
+                disp('Runtime messages supressed')
             end
             if strcmp(varargin{ii},'show') == 1
                 show = 1;
@@ -95,7 +95,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
     abs_y_min = min(min(dom_rot(:,2,:)));
     abs_y_max = max(max(dom_rot(:,2,:)));
     
-    %% probing lines
+    %% test lines
     seed_y = (abs_y_min-spacing/2):spacing:(abs_y_max+spacing/2);
     % seed_x1 = repmat(abs_x_min-spacing,1,numel(seed_y));
     % seed_x2 = repmat(abs_x_max+spacing,1,numel(seed_y));
@@ -145,7 +145,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
         ymin = min(min([gbs(2,:),gbs(4,:)]));
         ymax = max(max([gbs(2,:),gbs(4,:)]));
 
-        % get active probing lines
+        % get active test lines
         ind = seed_y <= ymax & seed_y >= ymin;
         seed_x1 = repmat(abs_x_min-spacing,1,numel(seed_y(ind)));
         seed_x2 = repmat(abs_x_max+spacing,1,numel(seed_y(ind)));
@@ -189,7 +189,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
             cho_max = zeros([1,numel(seed_y(ind))]);
             ntiny = 0;
 
-            % loop over probing lines
+            % loop over test lines
             for ii = 1:numel(seed_y(ind))
                 % get chords and intersection points              
                 idx_1 = gbs(2,:) > probe_1(ii,2) & gbs(4,:) < probe_1(ii,2);
@@ -210,7 +210,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
                     cho_max(ii) = 0;
                 end
                 
-                % plot probing line and intersections
+                % plot test line and intersections
                 if show
                     % plot GB segments intersecting the test lines
                     line([gbs(1,idx_1|idx_2);gbs(3,idx_1|idx_2)],[gbs(2,idx_1|idx_2);gbs(4,idx_1|idx_2)],'Color',[30,255,30]/255,'LineWidth',2);
@@ -252,7 +252,25 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
 end
 
 function [chords,x,y] = calc_chords(gbs,probe_1,probe_2,exclude)
-    
+    % Get chord lengths for given test lines and GB segments
+    % as described in Latypov et al. Materials Characterization (2018)
+    %
+    % Usage:
+    %   [x,y] = calc_chords(gbs,xy1,xy2)
+    %
+    % INPUT:
+    %   gbs - 3xN array of boundary segments 
+    %   xy1,xy2 - coordinates of the start and end points 
+    %             of the test line
+    % OUTPUT:
+    %  x,y - coordinates of intersection points
+    %     
+    % Marat I. Latypov (2018)
+    % latmarat@ucsb.edu
+    %
+    % Acknowledgments  
+    %   Hielsher (https://github.com/mtex-toolbox/mtex)
+
     % get intersection points
     [x,y] = calc_inters(gbs,probe_1,probe_2);
     
@@ -263,7 +281,7 @@ function [chords,x,y] = calc_chords(gbs,probe_1,probe_2,exclude)
     x_diff = diff(x_sort,1,2);
     
     % remove rows with all NaNs 
-    % corresponds to probing lines not intersecting segments
+    % corresponds to test lines not intersecting segments
     x_diff(~any(~isnan(x_diff), 2),:)=[];
 
     % rm intersections with bounding box
@@ -278,23 +296,23 @@ function [chords,x,y] = calc_chords(gbs,probe_1,probe_2,exclude)
     
 end
 
-function  [x,y] = calc_inters(gbs,xy1,xy2,varargin)
-    % Get intersection points between boundary segments and probing lines
-    % as described in Latypov et al. Materials Characterization (2018)
+function  [x,y] = calc_inters(gbs,xy1,xy2)
+    % Get intersection points between boundary segments and test lines
     %
     % Usage:
-    %   [x,y] = calc_chords(gbs,xy1,xy2)
+    %   [x,y] = calc_inters(gbs,xy1,xy2)
     %
     % INPUT:
     %   gbs - 3xN array of boundary segments 
     %   xy1,xy2 - coordinates of the start and end points 
-    %             of the probing line
+    %             of the test line
     % OUTPUT:
     %  x,y - coordinates of intersection points
     % 
     % Acknowledgments: 
     %   Bourke (http://paulbourke.net/geometry/pointlineplane/)
     %   Hielsher (https://github.com/mtex-toolbox/mtex)
+    
     
     n_rows_1 = size(xy1,1);
     n_rows_2 = size(gbs,2);
