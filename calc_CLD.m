@@ -21,7 +21,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
     show = 0;
     vectorize = 0;
     set_cho_max = NaN;
-    cho_nbins = 250;
+    cho_nbins = 100;
     
     %% digest input 
     if nargin > 3
@@ -53,7 +53,7 @@ function [stats,chords] = calc_CLD(gbs,spacing,ang_range,varargin)
 
     % convert angles to radians
     degree = pi/180.0;
-    ang_range = ang_range*degree;
+    ang_range = -ang_range*degree;
 
     %% Initial Geometry
     
