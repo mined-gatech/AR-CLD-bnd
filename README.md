@@ -44,4 +44,4 @@ plot_CLD(stats.hst_x,cld_full)
 
 To cite this code and see more details, refer to
 
-M.I. Latypov, M. Kuhbach, I.J. Beyerlein, J.-C. Stinville, L.S. Toth, T.M. Pollock, S.R. Kalidindi, Application of chord length distribution and principal component analysis of diverse polycrystalline microstructures, _Under review in Materials Characterization_.
+M.I. Latypov, M. Kuhbach, I.J. Beyerlein, J.-C. Stinville, L.S. Toth, T.M. Pollock, S.R. Kalidindi, Application of chord length distribution and principal component analysis of diverse polycrystalline microstructures, _Accepted in Materials Characterization_.
